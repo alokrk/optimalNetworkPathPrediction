@@ -61,10 +61,9 @@ if __name__ == '__main__':
         count_key += 1
         for val in v:
             count_value += 1
-    print count_key
-    print count_value
+        print k, v
 
     new_map = assign_numbers(key_map)
 
-    for k,v in new_map.iteritems():
-        print k, v
+#    for k,v in new_map.iteritems():
+#        print k, v
