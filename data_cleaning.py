@@ -1,6 +1,9 @@
 import fingerprint
 import os
-
+from _dbus_bindings import String
+import networkx as nx
+import difflib
+import sys
 
 def read_file(filename, directory):
     if filename is None:
@@ -46,24 +49,112 @@ def assign_numbers(key_map):
         key_assign += 1
     return num
 
+def get_node_id(node_name, key_map, id_map):
+    node_name = ''.join(e for e in node_name if e.isalnum())
+    #print node_name
+    fp = fingerprint.Fingerprinter(node_name)
+    k = fp.get_ngram_fingerprint(n=1)
+    all_keys = id_map.keys()
+    key_to_lookup = k
+    if not k in all_keys:
+        key_to_lookup = difflib.get_close_matches(k, id_map.keys(), n = 1)
+        print key_to_lookup
+        key_to_lookup = key_to_lookup[0]
+    return id_map[key_to_lookup]
+
+def get_path_cost(G, path):
+    temp_path = path[:-1]
+    w = 0
+    for i,node in enumerate(temp_path):
+        w = w + G.get_edge_data(node, path[i+1])['cost']
+        
+    return w
+        
+
+def generate_graph(filename, key_map, id_map):
+    f = open(filename,'r')
+    G = nx.Graph()
+    
+    for (k,v) in id_map.iteritems():
+        G.add_node(v)
+    
+    for line in f:
+        edges = line.split('|')
+        n1 = get_node_id(edges[0].strip(), key_map, id_map)
+        n2 = get_node_id(edges[1].strip(), key_map, id_map)
+        c = int(edges[2].strip())
+        G.add_edge(n1, n2, cost = c)
+        
+    return G
+
+def find_features(G, path_file, key_map, id_map):
+    f = open(path_file, 'r')
+    paths = []
+    i = 0
+    for line in f:
+        if i > 25:
+            print 'break'
+            break
+        i += 1 
+        line = line.replace('\n','')
+        nodes = line.split('|')
+        path = []
+        for n in nodes:
+            path.append(get_node_id(n.strip(), key_map, id_map))
+        source = path[0]
+        target = path[(len(path) - 1)]
+        try:
+            shortest_paths = nx.all_shortest_paths(G, source, target, weight='cost')
+        except:
+            print 'path not found', sys.exc_info()[0]
+            paths.append(0)
+            continue
+        #print 'shortest paths : ', shortest_paths.next()
+        is_short = 0
+        shortest_paths = list(shortest_paths)
+        if path in shortest_paths:
+            is_short = 1
+        paths.append(is_short)
+    return paths
 
 if __name__ == '__main__':
-    filename = "./data/paths.txt"
+    path_filename = "./data/paths.txt"
     directory = "./data/train/"
     allFiles = tuple(file1 for file1 in os.listdir(directory))
     key_map = {}
     for filename1 in allFiles:
         key_map = make_path_fingerprint(filename1, directory, key_map)
-    key_map = make_path_fingerprint('paths.txt', './data/', key_map)
+    
+    #key_map = make_path_fingerprint('paths.txt', './data/', key_map)
     count_key = 0
     count_value = 0
     for k,v in key_map.iteritems():
         count_key += 1
         for val in v:
             count_value += 1
-        print k, v
+        #print k, v
 
-    new_map = assign_numbers(key_map)
-
-#    for k,v in new_map.iteritems():
+    id_map = assign_numbers(key_map)
+    
+    #f1 = open('key_map.txt','w')
+    #f1.write(String(key_map))
+    #f1.close()
+    
+    #f2 = open('node_map.txt','w')
+    #f2.write(String(id_map))
+    #f2.close()
+    
+    features = [] 
+    for filename in allFiles:
+        G = generate_graph(filename, key_map, id_map)
+        feature = find_features(G, path_filename, key_map, id_map)
+        print feature
+        features.append(feature)
+    
+    features_file = open('features.txt','w')
+    for f in features:
+        fs = ','.join(map(str,f))
+        print fs
+        features_file.write(fs)
+#    for k,v i new_map.iteritems():
 #        print k, v
