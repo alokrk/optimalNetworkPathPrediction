@@ -116,7 +116,7 @@ def find_features(G, path_file, key_map, id_map):
         #print 'shortest paths : ', shortest_paths.next()
         is_short = 0
 	print shortest_paths
-        #shortest_paths = list(shortest_paths)
+        shortest_paths = list(shortest_paths)
         if path in shortest_paths:
             is_short = 1
         paths.append(is_short)
