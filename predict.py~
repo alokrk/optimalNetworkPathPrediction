@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#Script by John Costella to create the predictions using Markov Chain
+>>>>>>> e8e984c3a1d4274dccfb8dbd9091cc857c688e11
 'take paths optimality file, output a prediction file using markov chains'
 
 import sys, csv
@@ -28,16 +32,24 @@ reader = csv.reader( i )
 periods = [ [] for x in range( 0, 3 )]
 
 for line in reader:
+<<<<<<< HEAD
 	#print len(line)
 	line = line[:15]
 	#print len(line)
 	line = map( int, line)
         #print line
+=======
+	line = map( int, line )
+>>>>>>> e8e984c3a1d4274dccfb8dbd9091cc857c688e11
 	predictions = get_predictions( line )
 
 	for i, period in enumerate( periods ):
 		period.append( predictions[i] )
+<<<<<<< HEAD
         #break
+=======
+
+>>>>>>> e8e984c3a1d4274dccfb8dbd9091cc857c688e11
 predicted = reduce( lambda x, y: x + y, periods )
 
 #assert( len( predicted ) == 50000 )

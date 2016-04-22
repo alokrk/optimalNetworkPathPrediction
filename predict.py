@@ -1,3 +1,4 @@
+#Script by John Costella to create the predictions using Markov Chain
 'take paths optimality file, output a prediction file using markov chains'
 
 import sys, csv
