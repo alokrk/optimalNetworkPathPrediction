@@ -29,7 +29,7 @@ periods = [ [] for x in range( 0, 3 )]
 
 for line in reader:
 	#print len(line)
-	line = line[:12]
+	line = line[:15]
 	#print len(line)
 	line = map( int, line)
         #print line

@@ -108,7 +108,7 @@ def find_features(G, path_file, key_map, id_map):
     paths = []
     i = 0
     for line in f:
-        #if i > 999:
+        #if i > 24:
         #    print 'break'
         #    break
         #i += 1 
@@ -119,22 +119,13 @@ def find_features(G, path_file, key_map, id_map):
             path.append(get_node_id(n.strip(), key_map, id_map))
         source = path[0]
         target = path[(len(path) - 1)]
-        #print path
-        try:
-            shortest_path = nx.shortest_path(G, source, target, weight='cost')
-            min_w = get_path_cost(G, shortest_path)
+	
+	try:
+	    paths.append(get_path_cost(G, path))       
         except:
             #print 'path not found', sys.exc_info()[0]
-            paths.append(0)
+            paths.append(-1)
             continue
-        #print 'shortest paths length : ', len(shortest_paths)
-        is_short = 0
-        is_optimal = check_optimal_path(G, path, min_w)
-        #shortest_paths = list(shortest_paths)
-        #if path in shortest_paths:
-        if is_optimal:
-            is_short = 1
-        paths.append(min_w)
     return paths
 
 if __name__ == '__main__':
@@ -179,7 +170,7 @@ if __name__ == '__main__':
         features.append(feature)
 	features.append("-")
     
-    features_file = open('features.txt','w')
+    features_file = open('wt_features.txt','w')
     for f in features:
         fs = ','.join(map(str,f))
         print fs

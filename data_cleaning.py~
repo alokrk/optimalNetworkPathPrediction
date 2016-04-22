@@ -106,12 +106,12 @@ def check_optimal_path(G, path, min_w):
 def find_features(G, path_file, key_map, id_map):
     f = open(path_file, 'r')
     paths = []
-    #i = 0
+    i = 0
     for line in f:
-        if i > 250:
-            print 'break'
-            break
-        i += 1 
+        #if i > 999:
+        #    print 'break'
+        #    break
+        #i += 1 
         line = line.replace('\n','')
         nodes = line.split('|')
         path = []
@@ -175,7 +175,9 @@ if __name__ == '__main__':
         G = generate_graph(os.path.join(directory,filename), key_map, id_map)
         feature = find_features(G, path_filename, key_map, id_map)
         print feature
+	features.append(filename)
         features.append(feature)
+	features.append("-")
     
     features_file = open('features.txt','w')
     for f in features:
